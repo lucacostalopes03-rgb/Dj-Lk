@@ -405,6 +405,118 @@ section {
     letter-spacing: 1px;
 }
 
+/* --- Window Modale (Version Split Image Portrait + Texte) --- */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 2000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+}
+
+.modal-content {
+    background-color: #0a0a0a;
+    border: 2px solid #ffffff;
+    padding: 2.5rem 2rem 2rem 2rem;
+    max-width: 750px; /* Un peu plus large pour accueillir les deux colonnes */
+    width: 100%;
+    position: relative;
+    animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.close-modal {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: #cccccc;
+}
+
+/* Layout Flexbox pour mettre l'image à côté du texte */
+.modal-body-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: stretch;
+}
+
+/* Colonne Image (Portrait) */
+.modal-image-container {
+    flex: 1;
+    min-width: 240px;
+}
+
+.modal-image {
+    width: 100%;
+    height: 100%;
+    min-height: 320px; /* Hauteur imposée pour forcer le look Portrait */
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Colonne Contenu texte */
+.modal-text-container {
+    flex: 1.3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.modal-text-container h3 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ffffff, #999999);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#modalDate {
+    color: #ffffff; 
+    font-weight: 700; 
+    margin-bottom: 0.25rem; 
+    font-size: 1.1rem;
+}
+
+#modalLocation {
+    color: #999999; 
+    font-size: 0.9rem; 
+    margin-bottom: 1.2rem; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+}
+
+#modalDesc {
+    color: #cccccc;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+}
+
 /* Footer */
 footer {
     background: rgba(0, 0, 0, 0.8);
@@ -446,11 +558,31 @@ footer a:hover {
     .contact {
         padding: 1.5rem;
     }
+    
+    /* Sur mobile, on remet l'image au-dessus du texte pour que ça reste lisible */
+    .modal-body-layout {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .modal-image-container {
+        min-width: 100%;
+    }
+    
+    .modal-image {
+        min-height: 200px;
+        height: 220px;
+    }
+
+    .modal-content {
+        padding: 2rem 1.5rem 1.5rem 1.5rem;
+        max-width: 90%;
+    }
 }
 
 /* Print-friendly */
 @media print {
-    nav, .cta-group {
+    nav, .cta-group, .modal {
         display: none;
     }
 }
