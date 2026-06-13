@@ -56,19 +56,36 @@
     <section id="dates">
         <h2 class="section-title">Prochaines Dates</h2>
         <div class="dates-grid">
-            <div class="date-card">
+            <div class="date-card" style="cursor: pointer;" 
+                 data-title="SolunaEvent" 
+                 data-date="19 - 20 Juin" 
+                 data-location="Suisse (CH)" 
+                 data-img="image-soluna.jpg" 
+                 data-desc="Grosse ambiance garantie avec un set exclusif Rap et Shatta. Ouverture des portes dès 22h. Entrée libre avant minuit, viens tôt pour enflammer la piste avec nous ! Réserve ton week-end, ça va être lourd.">
                 <div class="status">À venir</div>
                 <div class="date">19 - 20 Juin</div>
                 <div class="venue">SolunaEvent</div>
                 <div class="location">CH</div>
             </div>
-            <div class="date-card">
+            
+            <div class="date-card" style="cursor: pointer;" 
+                 data-title="Event Privé" 
+                 data-date="27 Juin" 
+                 data-location="Suisse (CH)" 
+                 data-img="image-luca.jpg" 
+                 data-desc="Soirée privée. Mix spécial Latino & House sur mesure pour un anniversaire d'exception. L'ambiance sera intimiste mais explosive. Pour réserver ton propre événement privé, écris-moi directement via le formulaire ci-dessous.">
                 <div class="status">À venir</div>
                 <div class="date">27 Juin</div>
                 <div class="venue">Event Privé</div>
                 <div class="location">CH</div>
             </div>
-            <div class="date-card">
+            
+            <div class="date-card" style="cursor: pointer;" 
+                 data-title="Promo Le Locle" 
+                 data-date="4 Juillet" 
+                 data-location="Le Locle, CH" 
+                 data-img="https://festivalpromo.ch/wp-content/uploads/2026/06/DJ-L-K-DJ-Fab.jpeg" 
+                 data-desc="La traditionnelle fête des Promos du Locle ! Retrouve-moi sur la grande scène extérieure pour un show open-format explosif en plein cœur de la ville. Set exclusif de block-party, ramène toute ton équipe !">
                 <div class="status">À venir</div>
                 <div class="date">4 Juillet</div>
                 <div class="venue">Promo Le Locle</div>
@@ -127,6 +144,23 @@
         </div>
     </section>
 
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body-layout">
+                <div class="modal-image-container">
+                    <img id="modalImg" src="" alt="Image de l'événement" class="modal-image">
+                </div>
+                <div class="modal-text-container">
+                    <h3 id="modalTitle"></h3>
+                    <p id="modalDate"></p>
+                    <p id="modalLocation"></p>
+                    <p id="modalDesc"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2026 DJ LK. Tous droits réservés.</p>
         <p style="margin-top: 1rem;">
@@ -145,6 +179,44 @@
                     target.scrollIntoView({ behavior: 'smooth' });
                 }
             });
+        });
+
+        // Logique de la boîte modale
+        const modal = document.getElementById('eventModal');
+        const closeModal = document.querySelector('.close-modal');
+
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDate = document.getElementById('modalDate');
+        const modalLocation = document.getElementById('modalLocation');
+        const modalImg = document.getElementById('modalImg');
+        const modalDesc = document.getElementById('modalDesc');
+
+        // Ouverture de la modale au clic
+        document.querySelectorAll('.date-card').forEach(card => {
+            card.addEventListener('click', () => {
+                modalTitle.textContent = card.getAttribute('data-title');
+                modalDate.textContent = card.getAttribute('data-date');
+                modalLocation.textContent = card.getAttribute('data-location');
+                modalImg.src = card.getAttribute('data-img');
+                modalDesc.textContent = card.getAttribute('data-desc');
+                
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Empêche de scroller le fond
+            });
+        });
+
+        // Fermeture avec le bouton X
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        // Fermeture au clic à l'extérieur de la boîte
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
         });
     </script>
 </body>
