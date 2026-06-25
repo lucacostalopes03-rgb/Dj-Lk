@@ -349,5 +349,113 @@
         addEventListener('click', e => { if (e.target === modal) hide(); });
         addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
     </script>
+
+    <!-- CHATBOT -->
+    <div style="position:fixed;bottom:28px;right:24px;z-index:999;" id="cb-bubble">
+        <button style="width:60px;height:60px;border-radius:50%;background:linear-gradient(100deg, #8b2bff 0%, #ff2d92 60%, #ff5e3a 100%);border:none;cursor:pointer;font-size:1.8rem;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(255, 45, 146, 0.35);transition:transform .3s,box-shadow .3s;" id="cb-btn">💬</button>
+    </div>
+    <div style="position:fixed;bottom:100px;right:24px;width:380px;height:520px;background:#0c0a16;border:1px solid rgba(255,255,255,.22);border-radius:20px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6);opacity:0;transform:translateY(20px) scale(.95);pointer-events:none;transition:opacity .3s,transform .3s;z-index:998;" id="cb-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1.2rem;border-bottom:1px solid rgba(255,255,255,.10);">
+            <h3 style="font:700 1rem 'Sora', sans-serif;margin:0;">DJ LK Assistant 🎧</h3>
+            <button id="cb-close" style="background:none;border:none;font-size:1.8rem;color:#bbb8cc;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:color .25s;">&times;</button>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:1.2rem;display:flex;flex-direction:column;gap:.8rem;" id="cb-msgs">
+            <div style="display:flex;">
+                <p style="background:rgba(255,255,255,.045);color:#f4f2ff;padding:.75rem 1rem;border-radius:12px;margin:0;max-width:85%;word-wrap:break-word;font-size:.95rem;line-height:1.4;">Salut! 👋 Je suis l'assistant DJ LK. Des questions sur les tarifs, les genres, la disponibilité ou la réservation? Je suis là pour aider!</p>
+            </div>
+        </div>
+        <div style="display:flex;gap:.6rem;padding:1rem;border-top:1px solid rgba(255,255,255,.10);">
+            <input type="text" style="flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.10);color:#f4f2ff;padding:.75rem 1rem;border-radius:999px;font-family:inherit;font-size:.95rem;transition:border-color .25s,box-shadow .25s;" id="cb-inp" placeholder="Posez votre question...">
+            <button style="background:linear-gradient(100deg, #8b2bff 0%, #ff2d92 60%, #ff5e3a 100%);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:transform .25s,box-shadow .25s;" id="cb-send">📤</button>
+        </div>
+    </div>
+ 
+    <script>
+        const cbBtn = document.getElementById('cb-btn');
+        const cbBox = document.getElementById('cb-box');
+        const cbClose = document.getElementById('cb-close');
+        const cbInp = document.getElementById('cb-inp');
+        const cbSend = document.getElementById('cb-send');
+        const cbMsgs = document.getElementById('cb-msgs');
+ 
+        cbBtn.onclick = () => {
+            cbBox.style.opacity = cbBox.style.opacity === '1' ? '0' : '1';
+            cbBox.style.pointerEvents = cbBox.style.opacity === '1' ? 'auto' : 'none';
+            cbBox.style.transform = cbBox.style.opacity === '1' ? 'translateY(0) scale(1)' : 'translateY(20px) scale(.95)';
+            if (cbBox.style.opacity === '1') cbInp.focus();
+        };
+ 
+        cbClose.onclick = () => {
+            cbBox.style.opacity = '0';
+            cbBox.style.pointerEvents = 'none';
+            cbBox.style.transform = 'translateY(20px) scale(.95)';
+        };
+ 
+        async function sendChatMsg() {
+            const msg = cbInp.value.trim();
+            if (!msg) return;
+ 
+            const userDiv = document.createElement('div');
+            userDiv.style.cssText = 'display:flex;justify-content:flex-end;animation:fadeIn .3s;';
+            userDiv.innerHTML = `<p style="background:linear-gradient(100deg, #8b2bff 0%, #ff2d92 60%, #ff5e3a 100%);color:#fff;padding:.75rem 1rem;border-radius:12px;margin:0;max-width:85%;word-wrap:break-word;font-size:.95rem;line-height:1.4;">${msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
+            cbMsgs.appendChild(userDiv);
+            cbInp.value = '';
+            cbMsgs.scrollTop = cbMsgs.scrollHeight;
+ 
+            const loadDiv = document.createElement('div');
+            loadDiv.style.cssText = 'display:flex;animation:fadeIn .3s;';
+            loadDiv.innerHTML = `<p style="background:rgba(255,255,255,.08);color:#bbb8cc;padding:.75rem 1rem;border-radius:12px;margin:0;max-width:85%;font-size:.95rem;line-height:1.4;font-style:italic;">En train de réfléchir...</p>`;
+            cbMsgs.appendChild(loadDiv);
+            cbMsgs.scrollTop = cbMsgs.scrollHeight;
+ 
+            try {
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': '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',
+},
+                   body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile', // ou un autre modèle Groq
+                    // max_tokens: 500,
+                    // messages: [
+                    // { role: 'system', content: `Tu es l'assistant IA du DJ LK, un DJ professionnel en Suisse spécialisé...` },
+                    // { role: 'user', content: msg }
+                    
+                
+            })
+                
+ 
+                loadDiv.remove();
+ 
+                if (!res.ok) throw new Error('API Error');
+                const data = await res.json();
+                const reply = data.content[0].text;
+ 
+                const botDiv = document.createElement('div');
+                botDiv.style.cssText = 'display:flex;animation:fadeIn .3s;';
+                botDiv.innerHTML = `<p style="background:rgba(255,255,255,.045);color:#f4f2ff;padding:.75rem 1rem;border-radius:12px;margin:0;max-width:85%;word-wrap:break-word;font-size:.95rem;line-height:1.4;">${reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
+                cbMsgs.appendChild(botDiv);
+                cbMsgs.scrollTop = cbMsgs.scrollHeight;
+            } catch (e) {
+                loadDiv.remove();
+                const errDiv = document.createElement('div');
+                errDiv.style.cssText = 'display:flex;animation:fadeIn .3s;';
+                errDiv.innerHTML = `<p style="background:rgba(255, 45, 146, 0.15);color:#ff2d92;padding:.75rem 1rem;border-radius:12px;margin:0;max-width:85%;font-size:.95rem;line-height:1.4;">Oups! Erreur API. Appelle-nous: +41 77 459 21 99 📞</p>`;
+                cbMsgs.appendChild(errDiv);
+                cbMsgs.scrollTop = cbMsgs.scrollHeight;
+            }
+        }
+ 
+        cbSend.onclick = sendChatMsg;
+        cbInp.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMsg(); });
+ 
+        cbBtn.onmouseover = () => cbBtn.style.transform = 'scale(1.1)';
+        cbBtn.onmouseout = () => cbBtn.style.transform = 'scale(1)';
+        cbClose.onmouseover = () => cbClose.style.color = '#ff2d92';
+        cbClose.onmouseout = () => cbClose.style.color = '#bbb8cc';
+    </script>
+
+
 </body>
 </html>
