@@ -413,24 +413,23 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': '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',
-},
-                   body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile', // ou un autre modèle Groq
-                    // max_tokens: 500,
-                    // messages: [
-                    // { role: 'system', content: `Tu es l'assistant IA du DJ LK, un DJ professionnel en Suisse spécialisé...` },
-                    // { role: 'user', content: msg }
-                    
-                
-            })
-                
+                        'Authorization': 'Bearer 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',
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        max_tokens: 500,
+                        messages: [
+                            { role: 'system', content: `Tu es l'assistant IA du DJ LK, un DJ professionnel en Suisse spécialisé en Rap, Shatta, Latino et House. Tu réponds aux questions sur les tarifs, la disponibilité, les styles musicaux et la réservation. Pour réserver, oriente vers le formulaire de contact ou le téléphone +41 77 459 21 99 / email CostaLL@rpn.ch. Réponds en français, de façon brève, chaleureuse et professionnelle.` },
+                            { role: 'user', content: msg }
+                        ]
+                    })
+                });
  
                 loadDiv.remove();
  
                 if (!res.ok) throw new Error('API Error');
                 const data = await res.json();
-                const reply = data.content[0].text;
+                const reply = data.choices[0].message.content;
  
                 const botDiv = document.createElement('div');
                 botDiv.style.cssText = 'display:flex;animation:fadeIn .3s;';
